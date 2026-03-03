@@ -10,6 +10,7 @@ interface PreviewProps {
   fontSize: number
   skew?: number
   tracking?: number
+  textAlign?: 'left' | 'center' | 'right'
   outlineMode?: boolean
   mainColor?: string
   strokeWidth?: number
@@ -23,6 +24,7 @@ export default function Preview({
   fontSize, 
   skew = 0, 
   tracking = 0, 
+  textAlign = 'left',
   outlineMode = false,
   mainColor = '#000000',
   strokeWidth = 2,
@@ -42,6 +44,7 @@ export default function Preview({
         backgroundColor: 'transparent',
         skew,
         tracking,
+        textAlign,
         outlineMode,
         strokeWidth,
         fillColor,
@@ -51,7 +54,7 @@ export default function Preview({
       console.error('Errore nella generazione dell\'anteprima:', error)
       return null
     }
-  }, [text, font, fontSize, skew, tracking, outlineMode, mainColor, strokeWidth, fillColor, useTransparentFill])
+  }, [text, font, fontSize, skew, tracking, textAlign, outlineMode, mainColor, strokeWidth, fillColor, useTransparentFill])
 
   return (
     <div className="relative bg-white border-2 border-gray-300 rounded-lg overflow-hidden shadow-sm h-40 flex items-center justify-center">

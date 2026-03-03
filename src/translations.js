@@ -1,6 +1,6 @@
 export const translations = {
   it: {
-    appTitle: 'GT7 Logo Designer',
+    appTitle: 'GT7 Text to SVG Editor',
     appSubtitle: 'Crea loghi SVG ottimizzati per Gran Turismo 7',
 
     textLabel: 'Testo',
@@ -27,6 +27,11 @@ export const translations = {
     fill: 'Riempimento',
     skew: 'Skew (Inclinazione): {deg}°',
     tracking: 'Tracking (Spaziatura): {px}px',
+
+    textAlign: 'Allineamento testo',
+    alignLeft: 'Sinistra',
+    alignCenter: 'Centro',
+    alignRight: 'Destra',
 
     svgSize: 'Dimensione SVG:',
     exportSvg: 'Download SVG',
@@ -73,7 +78,7 @@ export const translations = {
   },
 
   en: {
-    appTitle: 'GT7 Logo Designer',
+    appTitle: 'GT7 Text to SVG Editor',
     appSubtitle: 'Create SVG logos optimized for Gran Turismo 7',
 
     textLabel: 'Text',
@@ -100,6 +105,11 @@ export const translations = {
     fill: 'Fill',
     skew: 'Skew: {deg}°',
     tracking: 'Tracking: {px}px',
+
+    textAlign: 'Text alignment',
+    alignLeft: 'Left',
+    alignCenter: 'Center',
+    alignRight: 'Right',
 
     svgSize: 'SVG size:',
     exportSvg: 'Download SVG',

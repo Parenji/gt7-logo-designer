@@ -1,4 +1,4 @@
-# FontToSVG Exporter
+# GT7 Text to SVG Editor
 
 Una Single Page Application (SPA) che permette di visualizzare un testo personalizzato con un font specifico e di esportarlo come file SVG vettoriale (path-based), garantendo che il file risultante sia indipendente dal font installato sul sistema del destinatario.
 

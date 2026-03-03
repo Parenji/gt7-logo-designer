@@ -11,6 +11,7 @@ export interface SVGOptions {
   backgroundColor?: string
   skew?: number
   tracking?: number
+  textAlign?: 'left' | 'center' | 'right'
   outlineMode?: boolean
   strokeWidth?: number
   fillColor?: string
@@ -65,6 +66,7 @@ export function textToSVGPath(
     backgroundColor = 'transparent',
     skew = 0,
     tracking = 0,
+    textAlign = 'left',
     outlineMode = false,
     strokeWidth = 2,
     fillColor = '#ff0000',
@@ -78,36 +80,55 @@ export function textToSVGPath(
   // Gestione testo con più righe
   const lines = text.split('\n')
   const paths: Path[] = []
-  let x = 0
   let y = fontSize // Baseline per la prima riga
   let firstCharLeftBearing = 0
-  let maxWidth = 0
+
+  // Calcola larghezza di ogni riga (per allineamento). Usiamo la stessa logica di avanzamento
+  // usata poi per generare i path.
+  const lineWidths = lines.map((line) => {
+    let x = 0
+    for (let i = 0; i < line.length; i++) {
+      const glyph = font.charToGlyph(line[i])
+      const advanceWidth = glyph.advanceWidth ? glyph.advanceWidth * (fontSize / font.unitsPerEm) : fontSize * 0.6
+      x += advanceWidth + tracking
+    }
+    return x
+  })
+
+  const maxWidth = Math.max(0, ...lineWidths)
+  const shouldAlign = lines.length > 1
 
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
     const line = lines[lineIndex]
-    x = 0 // Reset x per ogni nuova riga
-    
+
+    let lineOffsetX = 0
+    if (shouldAlign) {
+      const lw = lineWidths[lineIndex] || 0
+      if (textAlign === 'center') {
+        lineOffsetX = (maxWidth - lw) / 2
+      } else if (textAlign === 'right') {
+        lineOffsetX = maxWidth - lw
+      }
+    }
+
+    let x = 0
     for (let i = 0; i < line.length; i++) {
       const char = line[i]
       const glyph = font.charToGlyph(char)
-      
+
       // Per il primo carattere della prima riga, considera il leftSideBearing
       if (lineIndex === 0 && i === 0 && glyph.leftSideBearing !== undefined) {
         const leftBearing = glyph.leftSideBearing * (fontSize / font.unitsPerEm)
         firstCharLeftBearing = Math.min(0, leftBearing) // Solo se negativo
       }
-      
-      const path = glyph.getPath(x, y, fontSize)
+
+      const path = glyph.getPath(lineOffsetX + x, y, fontSize)
       paths.push(path)
-      
-      // Avanza la posizione x per il prossimo carattere
+
       const advanceWidth = glyph.advanceWidth ? glyph.advanceWidth * (fontSize / font.unitsPerEm) : fontSize * 0.6
       x += advanceWidth + tracking
     }
-    
-    // Aggiorna la larghezza massima
-    maxWidth = Math.max(maxWidth, x)
-    
+
     // Vai alla riga successiva (se non è l'ultima)
     if (lineIndex < lines.length - 1) {
       y += fontSize * 1.2 // Spazio tra le righe (120% della dimensione del font)
@@ -226,46 +247,37 @@ export function formatFileSize(bytes: number): string {
  * Scarica il SVG come file
  */
 export function downloadSVG(svgContent: string, filename: string = 'export.svg'): void {
-  // Detect mobile devices
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-  
-  if (isMobile) {
-    // Per mobile: usa data URL con attributi specifici
-    const dataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`
-    const link = document.createElement('a')
-    link.href = dataUrl
+  const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+
+  const link = document.createElement('a')
+  link.href = url
+  link.rel = 'noopener'
+  link.style.display = 'none'
+
+  const supportsDownloadAttribute = 'download' in HTMLAnchorElement.prototype
+  if (supportsDownloadAttribute) {
     link.download = filename
-    link.setAttribute('download', filename)
-    link.setAttribute('target', '_blank')
-    link.style.display = 'none'
-    document.body.appendChild(link)
-    
-    // Prova multiple metodi di click per mobile
-    try {
-      link.click()
-    } catch (e) {
-      // Fallback per alcuni browser mobile
-      const event = new MouseEvent('click', {
-        view: window,
+  }
+
+  document.body.appendChild(link)
+
+  try {
+    link.dispatchEvent(
+      new MouseEvent('click', {
         bubbles: true,
-        cancelable: true
+        cancelable: true,
+        view: window,
       })
-      link.dispatchEvent(event)
-    }
-    
-    setTimeout(() => {
-      document.body.removeChild(link)
-    }, 100)
-  } else {
-    // Per desktop: comportamento normale
-    const blob = new Blob([svgContent], { type: 'image/svg+xml' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = filename
-    document.body.appendChild(link)
-    link.click()
+    )
+  } finally {
     document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+    // Su Firefox mobile, revocare subito l'object URL può interrompere il download.
+    setTimeout(() => URL.revokeObjectURL(url), 2000)
+  }
+
+  // Fallback: se l'attributo download non è supportato, apri il file (l'utente potrà salvarlo)
+  if (!supportsDownloadAttribute) {
+    window.open(url, '_blank', 'noopener,noreferrer')
   }
 }

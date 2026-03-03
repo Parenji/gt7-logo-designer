@@ -1,4 +1,4 @@
-Progetto: GT7 Logo Designer - SVG Export Tool
+Progetto: GT7 Text to SVG Editor - SVG Export Tool
 1. Obiettivo del Progetto
 
 Creare una Single Page Application (SPA) specializzata per Gran Turismo 7 che permetta ai giocatori di creare loghi personalizzati per le loro auto, visualizzando un testo con font specifici ed esportandolo come file SVG ottimizzato per i requisiti del gioco (sotto 15KB), garantendo compatibilità totale con il sistema di decalcomanie di GT7.

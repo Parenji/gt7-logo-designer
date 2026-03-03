@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Download, AlertCircle, FileText, ChevronDown, ChevronUp, Palette, ExternalLink, Instagram, Heart, X } from 'lucide-react'
 import FontSelector from '@/components/FontSelector'
 import Preview from '@/components/Preview'
@@ -15,6 +15,7 @@ export default function Home() {
   const [font, setFont] = useState<FontData | null>(null)
   const [skew, setSkew] = useState(0)
   const [tracking, setTracking] = useState(0)
+  const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('left')
   const [outlineMode, setOutlineMode] = useState(false)
   const [mainColor, setMainColor] = useState('#000000')
   const [strokeWidth, setStrokeWidth] = useState(2)
@@ -35,8 +36,16 @@ export default function Home() {
   } | null>(null)
   const [downloadFeedback, setDownloadFeedback] = useState(false)
   const [showSupport, setShowSupport] = useState(false)
+  const [isFirefoxMobile, setIsFirefoxMobile] = useState(false)
 
   const MAX_LENGTH = 30
+
+  useEffect(() => {
+    const ua = navigator.userAgent
+    const isFirefox = /Firefox\//i.test(ua) || /FxiOS\//i.test(ua)
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(ua)
+    setIsFirefoxMobile(isFirefox && isMobile)
+  }, [])
 
   // Calcola il peso del SVG in tempo reale
   const svgSize = useMemo(() => {
@@ -48,6 +57,7 @@ export default function Home() {
         backgroundColor: 'transparent',
         skew,
         tracking,
+        textAlign,
         outlineMode,
         strokeWidth,
         fillColor,
@@ -57,7 +67,7 @@ export default function Home() {
     } catch {
       return 0
     }
-  }, [text, font, skew, tracking, outlineMode, mainColor, strokeWidth, fillColor, useTransparentFill])
+  }, [text, font, skew, tracking, textAlign, outlineMode, mainColor, strokeWidth, fillColor, useTransparentFill])
 
   // Ottimizzazione SVGO in tempo reale
   const optimizedSvg = useMemo(() => {
@@ -69,6 +79,7 @@ export default function Home() {
         backgroundColor: 'transparent',
         skew,
         tracking,
+        textAlign,
         outlineMode,
         strokeWidth,
         fillColor,
@@ -78,7 +89,7 @@ export default function Home() {
     } catch {
       return null
     }
-  }, [text, font, skew, tracking, outlineMode, mainColor, strokeWidth, fillColor, useTransparentFill])
+  }, [text, font, skew, tracking, textAlign, outlineMode, mainColor, strokeWidth, fillColor, useTransparentFill])
 
   const handleExport = () => {
     if (!text || text.trim().length === 0) {
@@ -101,6 +112,7 @@ export default function Home() {
         backgroundColor: 'transparent',
         skew,
         tracking,
+        textAlign,
         outlineMode,
         strokeWidth,
         fillColor,
@@ -254,7 +266,7 @@ export default function Home() {
 
               {/* Anteprima Mobile */}
               <div className="md:hidden">
-                <Preview text={text} font={font} fontSize={48} mainColor={mainColor} outlineMode={outlineMode} strokeWidth={strokeWidth} fillColor={fillColor} useTransparentFill={useTransparentFill} skew={skew} tracking={tracking} />
+                <Preview text={text} font={font} fontSize={48} mainColor={mainColor} outlineMode={outlineMode} strokeWidth={strokeWidth} fillColor={fillColor} useTransparentFill={useTransparentFill} skew={skew} tracking={tracking} textAlign={textAlign} />
               </div>
             </div>
 
@@ -394,6 +406,48 @@ export default function Home() {
                       <span>+50px</span>
                     </div>
                   </div>
+
+                  {/* Allineamento testo (utile solo su più righe) */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      {t('textAlign')}
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setTextAlign('left')}
+                        className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors border ${
+                          textAlign === 'left'
+                            ? 'bg-red-600 text-white border-red-500'
+                            : 'bg-gray-700 text-gray-300 border-gray-600 hover:bg-gray-600'
+                        }`}
+                      >
+                        {t('alignLeft')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTextAlign('center')}
+                        className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors border ${
+                          textAlign === 'center'
+                            ? 'bg-red-600 text-white border-red-500'
+                            : 'bg-gray-700 text-gray-300 border-gray-600 hover:bg-gray-600'
+                        }`}
+                      >
+                        {t('alignCenter')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTextAlign('right')}
+                        className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors border ${
+                          textAlign === 'right'
+                            ? 'bg-red-600 text-white border-red-500'
+                            : 'bg-gray-700 text-gray-300 border-gray-600 hover:bg-gray-600'
+                        }`}
+                      >
+                        {t('alignRight')}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -436,6 +490,13 @@ export default function Home() {
             {/* Pulsante Download */}
             {optimizedSvg && (
               <div className="space-y-2">
+                {isFirefoxMobile && (
+                  <div className="p-3 bg-yellow-900/50 border border-yellow-700 rounded-lg">
+                    <p className="text-xs text-yellow-300 text-center">
+                      Su Firefox Mobile il download potrebbe fallire, provare su altri browser (Chrome, Safari)
+                    </p>
+                  </div>
+                )}
                 <button
                   onClick={handleDownload}
                   disabled={optimizedSvg.optimizedSize > 15360}
@@ -559,6 +620,7 @@ export default function Home() {
               fontSize={48}
               skew={skew}
               tracking={tracking}
+              textAlign={textAlign}
               outlineMode={outlineMode}
               mainColor={mainColor}
               strokeWidth={strokeWidth}

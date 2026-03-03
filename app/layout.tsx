@@ -3,7 +3,7 @@ import './globals.css'
 import { I18nProvider, LanguageToggle } from '@/src/i18n/I18nProvider'
 
 export const metadata: Metadata = {
-  title: 'GT7 Logo Designer',
+  title: 'GT7 Text to SVG Editor',
   description: 'Crea loghi SVG ottimizzati per Gran Turismo 7',
 }
 

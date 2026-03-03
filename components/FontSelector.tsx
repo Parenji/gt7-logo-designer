@@ -18,6 +18,21 @@ const PRELOADED_FONTS = [
     displayName: 'Audiowide'
   },
   {
+    name: 'Bangers',
+    filename: 'Bangers-Regular.ttf',
+    displayName: 'Bangers'
+  },
+  {
+    name: 'DM Sans',
+    filename: 'DMSans-SemiBold.ttf',
+    displayName: 'DM Sans'
+  },
+  {
+    name: 'Plaster',
+    filename: 'Plaster-Regular.ttf',
+    displayName: 'Plaster'
+  },
+  {
     name: 'Roboto', 
     filename: 'Roboto-VariableFont_wdth,wght.ttf',
     displayName: 'Roboto'
