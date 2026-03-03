@@ -251,6 +251,11 @@ export default function Home() {
                   />
                 </div>
               </div>
+
+              {/* Anteprima Mobile */}
+              <div className="md:hidden">
+                <Preview text={text} font={font} fontSize={48} mainColor={mainColor} outlineMode={outlineMode} strokeWidth={strokeWidth} fillColor={fillColor} useTransparentFill={useTransparentFill} skew={skew} tracking={tracking} />
+              </div>
             </div>
 
             {/* Controlli Tipografici Avanzati */}
@@ -419,8 +424,8 @@ export default function Home() {
                   <FileText className="w-4 h-4" />
                   <span>{t('svgSize')}</span>
                 </div>
-                <span className={`font-medium ${optimizedSvg.optimizedSize > 15000 ? 'text-red-400' : 'text-green-400'}`}>
-                  {optimizedSvg.optimizedSize > 15000 
+                <span className={`font-medium ${optimizedSvg.optimizedSize > 15360 ? 'text-red-400' : 'text-green-400'}`}>
+                  {optimizedSvg.optimizedSize > 15360 
                     ? t('tooLargeForGt7', { size: (optimizedSvg.optimizedSize / 1024).toFixed(1) })
                     : t('readyForGt7', { size: (optimizedSvg.optimizedSize / 1024).toFixed(1) })
                   }
@@ -433,13 +438,13 @@ export default function Home() {
               <div className="space-y-2">
                 <button
                   onClick={handleDownload}
-                  disabled={optimizedSvg.optimizedSize > 15000}
+                  disabled={optimizedSvg.optimizedSize > 15360}
                   className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-3 px-6 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 min-h-[44px] shadow-lg"
                 >
                   <Download className="w-5 h-5" />
                   {t('exportSvg')}
                 </button>
-                {optimizedSvg.optimizedSize > 15000 && (
+                {optimizedSvg.optimizedSize > 15360 && (
                   <p className="text-xs text-red-400 text-center">
                     {t('tooLargeForGt7', { size: (optimizedSvg.optimizedSize / 1024).toFixed(1) })}
                   </p>
@@ -546,7 +551,7 @@ export default function Home() {
           )}
 
           {/* Area Anteprima */}
-          <div className="space-y-4">
+          <div className="hidden md:block space-y-4">
             <h2 className="text-lg font-semibold text-gray-300">{t('previewTitle')}</h2>
             <Preview 
               text={text} 

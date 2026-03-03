@@ -54,7 +54,7 @@ export default function Preview({
   }, [text, font, fontSize, skew, tracking, outlineMode, mainColor, strokeWidth, fillColor, useTransparentFill])
 
   return (
-    <div className="relative bg-white border-2 border-gray-300 rounded-lg overflow-hidden shadow-sm h-64 flex items-center justify-center">
+    <div className="relative bg-white border-2 border-gray-300 rounded-lg overflow-hidden shadow-sm h-40 flex items-center justify-center">
       {/* Griglia di background */}
       <div
         className="absolute inset-0 opacity-5"
@@ -69,13 +69,13 @@ export default function Preview({
       
       {svgContent ? (
         <div
-          className="relative w-full h-full flex items-center justify-center p-6 overflow-hidden"
+          className="relative w-full h-full flex items-center justify-center p-4 overflow-hidden"
           dangerouslySetInnerHTML={{ __html: svgContent.replace(/<\?xml[^>]*\?>/, '').replace(/width="[^"]*"/, '').replace(/height="[^"]*"/, '').replace(/<svg/, '<svg style="max-width: 100%; max-height: 100%; width: auto; height: auto;"') }}
         />
       ) : (
         <div className="relative text-gray-400 text-center">
-          <p className="text-lg">{t('previewEmptyTitle')}</p>
-          <p className="text-sm mt-2">
+          <p className="text-sm">{t('previewEmptyTitle')}</p>
+          <p className="text-xs mt-1">
             {!font ? t('previewNeedFont') : !text ? t('previewNeedText') : ''}
           </p>
         </div>

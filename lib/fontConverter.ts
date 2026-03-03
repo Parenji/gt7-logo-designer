@@ -135,10 +135,10 @@ export function textToSVGPath(
   minX = Math.min(minX, 0, firstCharLeftBearing)
   minY = Math.min(minY, 0)
   maxX = Math.max(maxX, x)
-  maxY = Math.max(maxY, fontSize * 1.2) // Aggiungi spazio extra per caratteri alti
+  maxY = Math.max(maxY, fontSize * 1.1) // Ridotto da 1.2 a 1.1 per meno spazio sopra
 
-  // Aggiungi padding generoso per evitare che i caratteri vengano tagliati
-  const padding = fontSize * 0.3
+  // Aggiungi padding controllato per ottimizzare lo spazio
+  const padding = fontSize * 0.15 // Ridotto da 0.3 a 0.15 (15% invece di 30%)
   const width = maxX - minX + padding * 2
   const height = maxY - minY + padding * 2
   const viewBoxX = minX - padding
