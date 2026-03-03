@@ -226,17 +226,46 @@ export function formatFileSize(bytes: number): string {
  * Scarica il SVG come file
  */
 export function downloadSVG(svgContent: string, filename: string = 'export.svg'): void {
-  const blob = new Blob([svgContent], { type: 'image/svg+xml' })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-  // Aggiunge target="_blank" per mobile per evitare che si apra nella stessa pagina
-  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    link.target = '_blank'
+  // Detect mobile devices
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+  
+  if (isMobile) {
+    // Per mobile: usa data URL con attributi specifici
+    const dataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`
+    const link = document.createElement('a')
+    link.href = dataUrl
+    link.download = filename
+    link.setAttribute('download', filename)
+    link.setAttribute('target', '_blank')
+    link.style.display = 'none'
+    document.body.appendChild(link)
+    
+    // Prova multiple metodi di click per mobile
+    try {
+      link.click()
+    } catch (e) {
+      // Fallback per alcuni browser mobile
+      const event = new MouseEvent('click', {
+        view: window,
+        bubbles: true,
+        cancelable: true
+      })
+      link.dispatchEvent(event)
+    }
+    
+    setTimeout(() => {
+      document.body.removeChild(link)
+    }, 100)
+  } else {
+    // Per desktop: comportamento normale
+    const blob = new Blob([svgContent], { type: 'image/svg+xml' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
   }
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  URL.revokeObjectURL(url)
 }
